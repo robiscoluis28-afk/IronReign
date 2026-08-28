@@ -10,10 +10,20 @@ on:
 
 jobs:
   build-and-upload:
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@v4
+
+      # .NET para iOS exige una versión concreta de Xcode; el runner trae
+      # varias instaladas en paralelo, así que seleccionamos la más reciente
+      # en vez de depender de la que esté activa por defecto.
+      - name: Select latest Xcode
+        run: |
+          LATEST_XCODE=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
+          echo "Usando $LATEST_XCODE"
+          sudo xcode-select -s "$LATEST_XCODE"
+          xcodebuild -version
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
