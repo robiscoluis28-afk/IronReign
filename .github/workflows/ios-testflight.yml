@@ -20,8 +20,11 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Install MAUI iOS workload
-        run: dotnet workload install ios maui-ios
+      # Se instalan todos los workloads de MAUI (no solo iOS): el proyecto está
+      # multi-target (net9.0-android;net9.0-ios) y el restore de un publish con
+      # -f net9.0-ios sigue evaluando el resto de TargetFrameworks del csproj.
+      - name: Install MAUI workloads
+        run: dotnet workload install maui
 
       # --- Certificado de distribución -----------------------------------
       # Secreto IOS_DIST_CERTIFICATE_BASE64: el .p12 exportado desde Keychain
