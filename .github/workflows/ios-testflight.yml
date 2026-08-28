@@ -16,19 +16,46 @@ jobs:
       - uses: actions/checkout@v4
 
       # .NET para iOS exige una versión EXACTA de Xcode (ni más nueva ni más
-      # vieja vale), y el runner trae varias instaladas en paralelo. Buscamos
-      # la 26.5 concreta; si no está, usamos la más cercana como último recurso.
-      - name: Select Xcode 26.5
+      # vieja vale), y el runner trae varias instaladas en paralelo. Además,
+      # alguna de esas instalaciones puede estar incompleta (falta el SDK),
+      # así que probamos candidatos por cercanía a 26.5 y verificamos que el
+      # SDK realmente exista antes de darla por buena.
+      - name: Inspect installed Xcode versions
         run: |
-          echo "Xcode instalados:"
-          ls -d /Applications/Xcode_*.app 2>/dev/null
-          TARGET_XCODE=$(ls -d /Applications/Xcode_26.5*.app 2>/dev/null | head -1)
-          if [ -z "$TARGET_XCODE" ]; then
-            echo "No se encontró Xcode 26.5 exacto, usando el más reciente disponible."
-            TARGET_XCODE=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
+          for XC in /Applications/Xcode_*.app /Applications/Xcode.app; do
+            [ -d "$XC" ] || continue
+            PLIST="$XC/Contents/version.plist"
+            SDK="$XC/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+            VER="unknown"
+            [ -f "$PLIST" ] && VER=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$PLIST" 2>/dev/null)
+            if [ -d "$SDK" ]; then
+              echo "$XC -> version $VER, SDK: OK"
+            else
+              echo "$XC -> version $VER, SDK: MISSING"
+            fi
+          done
+
+      - name: Select a working Xcode close to 26.5
+        run: |
+          CANDIDATES=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -t_ -k2 -V)
+          BEST=""
+          for XC in $CANDIDATES; do
+            SDK="$XC/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+            if [ -d "$SDK" ]; then
+              BEST="$XC"
+              case "$XC" in
+                *Xcode_26.5*) break ;;
+              esac
+            fi
+          done
+
+          if [ -z "$BEST" ]; then
+            echo "No se encontró ningún Xcode con SDK completo." >&2
+            exit 1
           fi
-          echo "Usando $TARGET_XCODE"
-          sudo xcode-select -s "$TARGET_XCODE"
+
+          echo "Usando $BEST"
+          sudo xcode-select -s "$BEST"
           xcodebuild -version
 
       - name: Set up .NET
