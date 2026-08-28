@@ -15,14 +15,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # .NET para iOS exige una versión concreta de Xcode; el runner trae
-      # varias instaladas en paralelo, así que seleccionamos la más reciente
-      # en vez de depender de la que esté activa por defecto.
-      - name: Select latest Xcode
+      # .NET para iOS exige una versión EXACTA de Xcode (ni más nueva ni más
+      # vieja vale), y el runner trae varias instaladas en paralelo. Buscamos
+      # la 26.5 concreta; si no está, usamos la más cercana como último recurso.
+      - name: Select Xcode 26.5
         run: |
-          LATEST_XCODE=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
-          echo "Usando $LATEST_XCODE"
-          sudo xcode-select -s "$LATEST_XCODE"
+          echo "Xcode instalados:"
+          ls -d /Applications/Xcode_*.app 2>/dev/null
+          TARGET_XCODE=$(ls -d /Applications/Xcode_26.5*.app 2>/dev/null | head -1)
+          if [ -z "$TARGET_XCODE" ]; then
+            echo "No se encontró Xcode 26.5 exacto, usando el más reciente disponible."
+            TARGET_XCODE=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
+          fi
+          echo "Usando $TARGET_XCODE"
+          sudo xcode-select -s "$TARGET_XCODE"
           xcodebuild -version
 
       - name: Set up .NET
