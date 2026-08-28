@@ -56,7 +56,9 @@ jobs:
 
           echo "Usando $BEST"
           sudo xcode-select -s "$BEST"
+          sudo xcodebuild -runFirstLaunch
           xcodebuild -version
+          xcodebuild -showsdks
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
