@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="IronReign.Views.RoutineEditorPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewmodels="clr-namespace:IronReign.ViewModels"
+    xmlns:views="clr-namespace:IronReign.Views"
+    x:Name="PageSelf"
+    x:DataType="viewmodels:RoutineEditorViewModel"
+    Title="Editar rutina"
+    BackgroundColor="{StaticResource Background}">
+
+    <ScrollView x:Name="EditorScrollView">
+        <VerticalStackLayout Padding="20" Spacing="18">
+
+            <VerticalStackLayout Spacing="4">
+                <Label
+                    Text="{Binding RoutineName}"
+                    Style="{StaticResource TitleLabelStyle}" />
+                <Label
+                    Text="Define tu rutina y úsala después en Entreno."
+                    Style="{StaticResource BodyLabelStyle}" />
+            </VerticalStackLayout>
+
+            <HorizontalStackLayout Spacing="10">
+                <Button
+                    Text="Activar"
+                    Command="{Binding ActivateRoutineCommand}"
+                    Style="{StaticResource SecondaryButtonStyle}" />
+
+                <Button
+                    Text="Eliminar"
+                    Command="{Binding DeleteRoutineCommand}"
+                    Style="{StaticResource SecondaryButtonStyle}" />
+            </HorizontalStackLayout>
+
+            <Label
+                Text="Rutina activa"
+                TextColor="{StaticResource Accent}"
+                FontSize="13"
+                IsVisible="{Binding IsActiveRoutine}" />
+
+            <Border Style="{StaticResource InputContainerStyle}">
+                <Entry
+                    Text="{Binding RoutineName, Mode=TwoWay}"
+                    Placeholder="Nombre de rutina, ej. Push A" />
+            </Border>
+
+            <Border Style="{StaticResource InputContainerStyle}">
+                <Editor
+                    Text="{Binding RoutineNotes, Mode=TwoWay}"
+                    Placeholder="Notas de la rutina"
+                    AutoSize="TextChanges" />
+            </Border>
+
+            <Border Style="{StaticResource SubtleCardStyle}">
+                <VerticalStackLayout Spacing="14">
+                    <Label
+                        Text="Nuevo ejercicio"
+                        Style="{StaticResource SectionLabelStyle}"
+                        IsVisible="{Binding IsEditingExercise, Converter={StaticResource InvertedBoolConverter}}" />
+                    <Label
+                        Text="Editando ejercicio"
+                        Style="{StaticResource SectionLabelStyle}"
+                        TextColor="{StaticResource Accent}"
+                        IsVisible="{Binding IsEditingExercise}" />
+
+                    <Border Style="{StaticResource InputContainerStyle}">
+                        <Entry
+                            Text="{Binding NewExerciseName, Mode=TwoWay}"
+                            Placeholder="Ejercicio, ej. Press banca inclinado" />
+                    </Border>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Series" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Button
+                                    Grid.Column="0"
+                                    Text="-"
+                                    WidthRequest="40"
+                                    Clicked="OnDecreaseSetsClicked"
+                                    Style="{StaticResource SecondaryButtonStyle}" />
+                                <Label
+                                    Grid.Column="1"
+                                    Text="{Binding NewExercisePlannedSets}"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"
+                                    FontSize="16"
+                                    FontAttributes="Bold" />
+                                <Button
+                                    Grid.Column="2"
+                                    Text="+"
+                                    WidthRequest="40"
+                                    Clicked="OnIncreaseSetsClicked"
+                                    Style="{StaticResource SecondaryButtonStyle}" />
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Descanso (s)" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Button
+                                    Grid.Column="0"
+                                    Text="-"
+                                    WidthRequest="40"
+                                    Clicked="OnDecreaseRestClicked"
+                                    Style="{StaticResource SecondaryButtonStyle}" />
+                                <Label
+                                    Grid.Column="1"
+                                    Text="{Binding NewExerciseRestSeconds}"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"
+                                    FontSize="16"
+                                    FontAttributes="Bold" />
+                                <Button
+                                    Grid.Column="2"
+                                    Text="+"
+                                    WidthRequest="40"
+                                    Clicked="OnIncreaseRestClicked"
+                                    Style="{StaticResource SecondaryButtonStyle}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Border Style="{StaticResource InputContainerStyle}">
+                        <Entry
+                            Text="{Binding NewExerciseTargetReps, Mode=TwoWay}"
+                            Placeholder="Reps objetivo, ej. 8-12" />
+                    </Border>
+
+                    <Border Style="{StaticResource InputContainerStyle}">
+                        <Entry
+                            Text="{Binding NewExerciseSuggestedWeight, Mode=TwoWay}"
+                            Placeholder="Peso sugerido (kg)"
+                            Keyboard="Numeric" />
+                    </Border>
+
+                    <Border Style="{StaticResource InputContainerStyle}">
+                        <Entry
+                            Text="{Binding NewExerciseNotes, Mode=TwoWay}"
+                            Placeholder="Notas del ejercicio" />
+                    </Border>
+
+                    <!-- Superserie -->
+                    <BoxView HeightRequest="1" Color="{StaticResource TextSecondary}" Opacity="0.15" />
+
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label
+                            Text="🔗 Es superserie"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            VerticalTextAlignment="Center" />
+                        <Switch
+                            Grid.Column="1"
+                            IsToggled="{Binding NewExerciseIsSuperset, Mode=TwoWay}" />
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="6" IsVisible="{Binding NewExerciseIsSuperset}">
+                        <Label
+                            Text="Enlazar con"
+                            FontSize="12"
+                            TextColor="{StaticResource TextSecondary}" />
+                        <Border Style="{StaticResource InputContainerStyle}">
+                            <Picker
+                                ItemsSource="{Binding AvailableSupersetPartners}"
+                                ItemDisplayBinding="{Binding ExerciseName}"
+                                SelectedItem="{Binding NewExerciseSupersetPartner, Mode=TwoWay}"
+                                Title="Selecciona un ejercicio" />
+                        </Border>
+                        <Label
+                            Text="No hay otros ejercicios en esta rutina todavía. Añade uno primero para poder enlazarlo."
+                            FontSize="12"
+                            TextColor="{StaticResource TextSecondary}"
+                            IsVisible="{Binding AvailableSupersetPartners.Count, Converter={StaticResource IntIsZeroConverter}}" />
+                    </VerticalStackLayout>
+
+                    <!-- Técnica por serie -->
+                    <BoxView HeightRequest="1" Color="{StaticResource TextSecondary}" Opacity="0.15" />
+
+                    <Label
+                        Text="Técnica por serie"
+                        FontSize="12"
+                        TextColor="{StaticResource TextSecondary}" />
+
+                    <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding NewExerciseSetTechniques}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="viewmodels:SetTechniqueItemViewModel">
+                                <Border Style="{StaticResource InputContainerStyle}">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <Label
+                                                Text="{Binding SetIndex, StringFormat='Serie {0}'}"
+                                                FontAttributes="Bold"
+                                                VerticalTextAlignment="Center" />
+                                            <Picker
+                                                Grid.Column="1"
+                                                ItemsSource="{Binding
+                                                Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                                Path=BindingContext.SetTechniqueOptions,
+                                                x:DataType={x:Null}}"
+                                                SelectedItem="{Binding TechniqueType, Mode=TwoWay}" />
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding IsDropset}">
+                                            <Border Grid.Column="0" Style="{StaticResource InputContainerStyle}">
+                                                <Entry Text="{Binding DropWeight}" Placeholder="Bajar a (kg)" Keyboard="Numeric" />
+                                            </Border>
+                                            <Border Grid.Column="1" Style="{StaticResource InputContainerStyle}">
+                                                <Entry Text="{Binding DropReps}" Placeholder="Reps al bajar" />
+                                            </Border>
+                                        </Grid>
+
+                                        <VerticalStackLayout Spacing="8" IsVisible="{Binding IsDropsetDoble}">
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                                <Border Grid.Column="0" Style="{StaticResource InputContainerStyle}">
+                                                    <Entry Text="{Binding DropWeight}" Placeholder="1ª bajada (kg)" Keyboard="Numeric" />
+                                                </Border>
+                                                <Border Grid.Column="1" Style="{StaticResource InputContainerStyle}">
+                                                    <Entry Text="{Binding DropReps}" Placeholder="Reps 1ª bajada" />
+                                                </Border>
+                                            </Grid>
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                                <Border Grid.Column="0" Style="{StaticResource InputContainerStyle}">
+                                                    <Entry Text="{Binding DropWeight2}" Placeholder="2ª bajada (kg)" Keyboard="Numeric" />
+                                                </Border>
+                                                <Border Grid.Column="1" Style="{StaticResource InputContainerStyle}">
+                                                    <Entry Text="{Binding DropReps2}" Placeholder="Reps 2ª bajada" />
+                                                </Border>
+                                            </Grid>
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Spacing="8" IsVisible="{Binding IsCluster}">
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                                <Border Grid.Column="0" Style="{StaticResource InputContainerStyle}">
+                                                    <Entry Text="{Binding ClusterWeight}" Placeholder="Peso (kg)" Keyboard="Numeric" />
+                                                </Border>
+                                                <Border Grid.Column="1" Style="{StaticResource InputContainerStyle}">
+                                                    <Entry Text="{Binding ClusterRepsPerMiniSet}" Placeholder="Reps por mini-serie" />
+                                                </Border>
+                                            </Grid>
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                                <Border Grid.Column="0" Style="{StaticResource InputContainerStyle}">
+                                                    <Entry Text="{Binding ClusterMiniSetCount}" Placeholder="Nº mini-series" Keyboard="Numeric" />
+                                                </Border>
+                                                <Border Grid.Column="1" Style="{StaticResource InputContainerStyle}">
+                                                    <Entry Text="{Binding ClusterRestSeconds}" Placeholder="Descanso (s)" Keyboard="Numeric" />
+                                                </Border>
+                                            </Grid>
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Spacing="8" IsVisible="{Binding IsMyoReps}">
+                                            <Border Style="{StaticResource InputContainerStyle}">
+                                                <Entry Text="{Binding MyoActivationReps}" Placeholder="Reps set activador" />
+                                            </Border>
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                                <Border Grid.Column="0" Style="{StaticResource InputContainerStyle}">
+                                                    <Entry Text="{Binding MyoRepsPerMiniSet}" Placeholder="Reps por mini-serie" />
+                                                </Border>
+                                                <Border Grid.Column="1" Style="{StaticResource InputContainerStyle}">
+                                                    <Entry Text="{Binding MyoRestSeconds}" Placeholder="Descanso (s)" Keyboard="Numeric" />
+                                                </Border>
+                                            </Grid>
+                                        </VerticalStackLayout>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <Button
+                        Text="Guardar cambios"
+                        IsVisible="{Binding IsEditingExercise}"
+                        Command="{Binding AddExerciseCommand}" />
+
+                    <Button
+                        Text="Añadir ejercicio"
+                        IsVisible="{Binding IsEditingExercise, Converter={StaticResource InvertedBoolConverter}}"
+                        Command="{Binding AddExerciseCommand}" />
+
+                    <Button
+                        Text="Cancelar edición"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        IsVisible="{Binding IsEditingExercise}"
+                        Command="{Binding CancelEditExerciseCommand}" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <VerticalStackLayout
+                Spacing="12"
+                BindableLayout.ItemsSource="{Binding Exercises}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:RoutineExerciseEditorItemViewModel">
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems Mode="Reveal">
+                                    <SwipeItem
+                                        Text="Quitar"
+                                        BackgroundColor="{StaticResource Danger}"
+                                        Command="{Binding
+                                        Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                        Path=BindingContext.RemoveExerciseCommand,
+                                        x:DataType={x:Null}}"
+                                        CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+
+                            <Border Style="{StaticResource SubtleCardStyle}">
+                                <VerticalStackLayout Spacing="6">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Label
+                                                Text="🔗"
+                                                FontSize="16"
+                                                IsVisible="{Binding IsSupersetLinked}" />
+                                            <Label
+                                                Text="{Binding ExerciseName}"
+                                                FontSize="16"
+                                                FontAttributes="Bold"
+                                                TextColor="{StaticResource TextPrimary}" />
+                                        </HorizontalStackLayout>
+
+                                        <Button
+                                            Grid.Column="1"
+                                            Text="Editar"
+                                            FontSize="12"
+                                            Padding="12,6"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            Command="{Binding
+                                            Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                            Path=BindingContext.EditExerciseCommand,
+                                            x:DataType={x:Null}}"
+                                            CommandParameter="{Binding .}" />
+                                    </Grid>
+
+                                    <Label
+                                        Text="{Binding Summary}"
+                                        FontSize="13"
+                                        TextColor="{StaticResource TextSecondary}" />
+
+                                    <Label
+                                        Text="{Binding Notes}"
+                                        FontSize="13"
+                                        TextColor="{StaticResource TextSecondary}"
+                                        IsVisible="{Binding Notes, Converter={StaticResource StringNotEmptyConverter}}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </SwipeView>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Label
+                Text="{Binding ErrorMessage}"
+                TextColor="{StaticResource Danger}"
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+            <Button
+                Text="Guardar rutina"
+                Command="{Binding SaveRoutineCommand}" />
+
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

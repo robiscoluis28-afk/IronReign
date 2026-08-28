@@ -1,0 +1,23 @@
+?xml version="1.0" encoding="UTF-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+	<defs>
+		<linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0%" stop-color="#F2F2F2" />
+			<stop offset="35%" stop-color="#CFCFCF" />
+			<stop offset="65%" stop-color="#8E8E8E" />
+			<stop offset="100%" stop-color="#E7E7E7" />
+		</linearGradient>
+	</defs>
+
+	<!-- I -->
+	<path fill="url(#steel)" d="M155 116 L248 116 L248 142 L223 168 L223 360 L201 388 L179 360 L179 168 L155 142 Z" />
+
+	<!-- inner split -->
+	<path fill="#0B0B0D" d="M229 116 L248 116 L248 360 L239 389 L229 360 Z" />
+
+	<!-- R top -->
+	<path fill="url(#steel)" d="M268 116 L348 116 Q395 116 395 162 Q395 197 367 215 Q392 227 392 256 L392 271 Q392 298 374 319 L327 366 L287 366 L343 304 Q357 289 357 270 L357 257 Q357 239 343 231 Q334 226 318 226 L268 226 Z" />
+
+	<!-- R diagonal leg -->
+	<path fill="url(#steel)" d="M302 235 L340 235 L428 392 L384 392 Z" />
+</svg>

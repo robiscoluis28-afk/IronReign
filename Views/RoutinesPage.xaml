@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="IronReign.Views.RoutinesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewmodels="clr-namespace:IronReign.ViewModels"
+    xmlns:models="clr-namespace:IronReign.Models"
+    xmlns:views="clr-namespace:IronReign.Views"
+    x:Name="PageSelf"
+    x:DataType="viewmodels:RoutinesViewModel"
+    Title="Rutinas"
+    BackgroundColor="{StaticResource Background}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <VerticalStackLayout Grid.Row="0" Padding="20,16,20,8" Spacing="12">
+            <VerticalStackLayout Spacing="2">
+                <Label
+                    Text="Rutinas"
+                    Style="{StaticResource TitleLabelStyle}" />
+                <Label
+                    Text="Organiza tus rutinas y marca la que tienes activa."
+                    Style="{StaticResource BodyLabelStyle}" />
+            </VerticalStackLayout>
+
+            <Label
+                Text="{Binding ErrorMessage}"
+                TextColor="{StaticResource Danger}"
+                FontSize="13"
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+            <Border Style="{StaticResource InputContainerStyle}">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <Entry
+                        Grid.Column="0"
+                        Placeholder="Nombre de la nueva rutina"
+                        Text="{Binding NewRoutineName}" />
+                    <Button
+                        Grid.Column="1"
+                        Text="+"
+                        FontSize="20"
+                        WidthRequest="48"
+                        Padding="0"
+                        Command="{Binding AddRoutineCommand}" />
+                </Grid>
+            </Border>
+        </VerticalStackLayout>
+
+        <RefreshView Grid.Row="1" Command="{Binding LoadCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView
+                ItemsSource="{Binding Routines}"
+                Margin="0,0,0,12">
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Padding="20" Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label
+                            Text="Todavía no tienes rutinas"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource TextPrimary}"
+                            HorizontalTextAlignment="Center" />
+                        <Label
+                            Text="Crea la primera con el campo de arriba."
+                            Style="{StaticResource BodyLabelStyle}"
+                            HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:RoutineTemplate">
+                        <Border
+                            Style="{StaticResource SubtleCardStyle}"
+                            Margin="20,0">
+
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                    <VerticalStackLayout
+                                        Grid.Column="0"
+                                        Spacing="4"
+                                        VerticalOptions="Center">
+                                        <Label
+                                            Text="{Binding Name}"
+                                            FontSize="17"
+                                            FontAttributes="Bold"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                        <Label
+                                            Text="{Binding Notes}"
+                                            FontSize="13"
+                                            TextColor="{StaticResource TextSecondary}"
+                                            LineBreakMode="TailTruncation"
+                                            MaxLines="1" />
+                                        <Label
+                                            Text="Activa"
+                                            FontSize="12"
+                                            TextColor="{StaticResource Accent}"
+                                            IsVisible="{Binding IsActive}" />
+                                    </VerticalStackLayout>
+
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                        <Button
+                                            Text="&#8593;"
+                                            FontSize="14"
+                                            WidthRequest="36"
+                                            HeightRequest="36"
+                                            Padding="0"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            Command="{Binding
+    Source={RelativeSource AncestorType={x:Type ContentPage}},
+    Path=BindingContext.MoveUpCommand,
+    x:DataType={x:Null}}"
+                                            CommandParameter="{Binding .}" />
+                                        <Button
+                                            Text="&#8595;"
+                                            FontSize="14"
+                                            WidthRequest="36"
+                                            HeightRequest="36"
+                                            Padding="0"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            Command="{Binding
+    Source={RelativeSource AncestorType={x:Type ContentPage}},
+    Path=BindingContext.MoveDownCommand,
+    x:DataType={x:Null}}"
+                                            CommandParameter="{Binding .}" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+
+                                <Grid ColumnDefinitions="Auto,*,*" ColumnSpacing="8">
+                                    <Button
+                                        Grid.Column="0"
+                                        Text="Activar"
+                                        FontSize="13"
+                                        Padding="12,8"
+                                        IsVisible="{Binding IsActive, Converter={StaticResource InvertedBoolConverter}}"
+                                        Command="{Binding
+    Source={RelativeSource AncestorType={x:Type ContentPage}},
+    Path=BindingContext.ActivateRoutineCommand,
+    x:DataType={x:Null}}"
+                                        CommandParameter="{Binding .}" />
+
+                                    <Button
+                                        Grid.Column="1"
+                                        Text="Editar"
+                                        FontSize="13"
+                                        Padding="12,8"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        Command="{Binding
+    Source={RelativeSource AncestorType={x:Type ContentPage}},
+    Path=BindingContext.EditRoutineCommand,
+    x:DataType={x:Null}}"
+                                        CommandParameter="{Binding .}" />
+
+                                    <Button
+                                        Grid.Column="2"
+                                        Text="Borrar"
+                                        FontSize="13"
+                                        Padding="12,8"
+                                        BackgroundColor="{StaticResource Danger}"
+                                        TextColor="White"
+                                        Command="{Binding
+    Source={RelativeSource AncestorType={x:Type ContentPage}},
+    Path=BindingContext.DeleteRoutineCommand,
+    x:DataType={x:Null}}"
+                                        CommandParameter="{Binding .}" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

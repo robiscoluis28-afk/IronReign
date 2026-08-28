@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="IronReign.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewmodels="clr-namespace:IronReign.ViewModels"
+    x:DataType="viewmodels:SettingsViewModel"
+    Title="Ajustes"
+    BackgroundColor="{StaticResource Background}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="18">
+
+            <VerticalStackLayout Spacing="4">
+                <Label
+                    Text="Ajustes"
+                    Style="{StaticResource TitleLabelStyle}" />
+                <Label
+                    Text="Gestiona perfil, apariencia, unidades y datos de la app."
+                    Style="{StaticResource BodyLabelStyle}" />
+            </VerticalStackLayout>
+
+            <Label
+                Text="{Binding ErrorMessage}"
+                TextColor="{StaticResource Danger}"
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+            <Label
+                Text="{Binding SuccessMessage}"
+                TextColor="{StaticResource Accent}"
+                IsVisible="{Binding SuccessMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+            <Border Style="{StaticResource SubtleCardStyle}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                    <Border
+                        Grid.Column="0"
+                        BackgroundColor="#20180E"
+                        Stroke="{StaticResource Accent}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 16"
+                        Padding="8"
+                        VerticalOptions="Start"
+                        HeightRequest="52"
+                        WidthRequest="52">
+                        <Image Source="ironreign_icon.png" Aspect="AspectFit" />
+                    </Border>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="10">
+                        <Label
+                            Text="Perfil activo"
+                            Style="{StaticResource SectionLabelStyle}" />
+
+                        <Label
+                            Text="{Binding FullName}"
+                            FontSize="18"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource TextPrimary}" />
+
+                        <Label
+                            Text="{Binding Age, StringFormat='Edad: {0}'}"
+                            Style="{StaticResource BodyLabelStyle}"
+                            IsVisible="{Binding HasActiveUser}" />
+
+                        <Label
+                            Text="{Binding Sex, StringFormat='Sexo: {0}'}"
+                            Style="{StaticResource BodyLabelStyle}"
+                            IsVisible="{Binding HasActiveUser}" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource SubtleCardStyle}">
+                <VerticalStackLayout Spacing="12">
+                    <Label
+                        Text="Preferencias"
+                        Style="{StaticResource SectionLabelStyle}" />
+
+                    <VerticalStackLayout Spacing="6">
+                        <Label
+                            Text="Unidad de peso"
+                            FontSize="13"
+                            TextColor="{StaticResource TextSecondary}" />
+                        <Border Style="{StaticResource InputContainerStyle}">
+                            <Picker
+                                Title="Selecciona unidad"
+                                ItemsSource="{Binding WeightUnits}"
+                                SelectedItem="{Binding PreferredWeightUnit}" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <HorizontalStackLayout Spacing="6">
+                        <Label
+                            Text="Tema:"
+                            FontSize="13"
+                            TextColor="{StaticResource TextSecondary}" />
+                        <Label
+                            Text="Oscuro (diseño de IronReign)"
+                            FontSize="13"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource TextPrimary}" />
+                    </HorizontalStackLayout>
+
+                    <Button
+                        Text="Guardar preferencias"
+                        Command="{Binding SavePreferencesCommand}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource SubtleCardStyle}" IsVisible="{Binding IsCloudBackupConfigured}">
+                <VerticalStackLayout Spacing="12">
+                    <Label
+                        Text="Copia de seguridad"
+                        Style="{StaticResource SectionLabelStyle}" />
+
+                    <Label
+                        Text="Guarda tus rutinas e historial en tu cuenta para no perderlos si cambias de móvil."
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                    <Button
+                        Text="Sincronizar ahora"
+                        Command="{Binding SyncNowCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource SubtleCardStyle}">
+                <VerticalStackLayout Spacing="12">
+                    <Label
+                        Text="Datos"
+                        Style="{StaticResource SectionLabelStyle}" />
+
+                    <Button
+                        Text="Borrar historial"
+                        Command="{Binding DeleteHistoryCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}" />
+
+                    <Button
+                        Text="Borrar rutinas"
+                        Command="{Binding DeleteRoutinesCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}" />
+
+                    <Button
+                        Text="Restablecer todos los datos"
+                        Command="{Binding ResetAllDataCommand}"
+                        BackgroundColor="{StaticResource Danger}"
+                        TextColor="White" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource SubtleCardStyle}">
+                <VerticalStackLayout Spacing="12">
+                    <Label
+                        Text="Aplicación"
+                        Style="{StaticResource SectionLabelStyle}" />
+
+                    <Label
+                        Text="{Binding AppVersion, StringFormat='Versión: {0}'}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                    <Button
+                        Text="Cerrar sesión"
+                        Command="{Binding LogoutCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

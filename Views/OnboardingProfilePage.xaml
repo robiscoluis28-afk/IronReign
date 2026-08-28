@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="IronReign.Views.OnboardingProfilePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewmodels="clr-namespace:IronReign.ViewModels"
+    x:DataType="viewmodels:OnboardingProfileViewModel"
+    Title="Crear perfil"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="{StaticResource Background}">
+
+    <ScrollView>
+        <Grid RowDefinitions="Auto,*" Padding="0">
+
+            <Border
+                BackgroundColor="#151922"
+                StrokeThickness="0"
+                Padding="0,36,0,28">
+                <VerticalStackLayout
+                    MaximumWidthRequest="620"
+                    HorizontalOptions="Center"
+                    Padding="24,0"
+                    Spacing="10">
+
+                    <Border
+                        BackgroundColor="#20180E"
+                        Stroke="{StaticResource Accent}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 18"
+                        HorizontalOptions="Center"
+                        Padding="12,6">
+                        <Label
+                            Text="IRONREIGN"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource Accent}"
+                            HorizontalTextAlignment="Center" />
+                    </Border>
+
+                    <Label
+                        Text="Crea tu perfil"
+                        FontSize="40"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource TextPrimary}"
+                        HorizontalTextAlignment="Center" />
+
+                    <Label
+                        Text="Configura tu usuario para empezar a registrar entrenamientos, progreso y rutinas."
+                        FontSize="16"
+                        TextColor="{StaticResource TextSecondary}"
+                        HorizontalTextAlignment="Center"
+                        MaximumWidthRequest="520" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Grid Grid.Row="1" Padding="24,24,24,36">
+                <VerticalStackLayout
+                    MaximumWidthRequest="620"
+                    HorizontalOptions="Center"
+                    Spacing="16">
+
+                    <Border
+                        BackgroundColor="{StaticResource Surface}"
+                        Stroke="{StaticResource Border}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 26"
+                        Padding="28">
+
+                        <VerticalStackLayout Spacing="20">
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Nombre" Style="{StaticResource FieldTitleLabelStyle}" />
+                                <Border Style="{StaticResource InputContainerStyle}">
+                                    <Entry
+                                        Text="{Binding FirstName}"
+                                        Placeholder="Introduce tu nombre" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Apellidos" Style="{StaticResource FieldTitleLabelStyle}" />
+                                <Border Style="{StaticResource InputContainerStyle}">
+                                    <Entry
+                                        Text="{Binding LastName}"
+                                        Placeholder="Introduce tus apellidos" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Edad" Style="{StaticResource FieldTitleLabelStyle}" />
+                                <Border Style="{StaticResource InputContainerStyle}">
+                                    <Entry
+                                        Text="{Binding AgeText}"
+                                        Placeholder="Ej. 29"
+                                        Keyboard="Numeric" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="Sexo" Style="{StaticResource FieldTitleLabelStyle}" />
+
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                                    <Button
+                                        Grid.Column="0"
+                                        Text="Hombre"
+                                        Command="{Binding SelectSexCommand}"
+                                        CommandParameter="Hombre"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        BackgroundColor="{Binding IsMaleSelected, Converter={StaticResource BoolToAccentConverter}}"
+                                        TextColor="{Binding IsMaleSelected, Converter={StaticResource BoolToTextColorConverter}}" />
+
+                                    <Button
+                                        Grid.Column="1"
+                                        Text="Mujer"
+                                        Command="{Binding SelectSexCommand}"
+                                        CommandParameter="Mujer"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        BackgroundColor="{Binding IsFemaleSelected, Converter={StaticResource BoolToAccentConverter}}"
+                                        TextColor="{Binding IsFemaleSelected, Converter={StaticResource BoolToTextColorConverter}}" />
+
+                                    <Button
+                                        Grid.Column="2"
+                                        Text="Otro"
+                                        Command="{Binding SelectSexCommand}"
+                                        CommandParameter="Otro"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        BackgroundColor="{Binding IsOtherSelected, Converter={StaticResource BoolToAccentConverter}}"
+                                        TextColor="{Binding IsOtherSelected, Converter={StaticResource BoolToTextColorConverter}}" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="Unidad" Style="{StaticResource FieldTitleLabelStyle}" />
+
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                    <Button
+                                        Grid.Column="0"
+                                        Text="kg"
+                                        Command="{Binding SelectWeightUnitCommand}"
+                                        CommandParameter="kg"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        BackgroundColor="{Binding IsKgSelected, Converter={StaticResource BoolToAccentConverter}}"
+                                        TextColor="{Binding IsKgSelected, Converter={StaticResource BoolToTextColorConverter}}" />
+
+                                    <Button
+                                        Grid.Column="1"
+                                        Text="lb"
+                                        Command="{Binding SelectWeightUnitCommand}"
+                                        CommandParameter="lb"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        BackgroundColor="{Binding IsLbSelected, Converter={StaticResource BoolToAccentConverter}}"
+                                        TextColor="{Binding IsLbSelected, Converter={StaticResource BoolToTextColorConverter}}" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <Label
+                                Text="{Binding ErrorMessage}"
+                                FontSize="14"
+                                TextColor="{StaticResource Danger}"
+                                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+                            <Button
+                                Text="Guardar perfil"
+                                Command="{Binding SaveProfileCommand}"
+                                HeightRequest="56" />
+
+                            <Label
+                                Text="Podrás cambiar el perfil activo y los ajustes más adelante."
+                                FontSize="13"
+                                TextColor="{StaticResource TextMuted}"
+                                HorizontalTextAlignment="Center" />
+
+                            <ActivityIndicator
+                                IsRunning="{Binding IsBusy}"
+                                IsVisible="{Binding IsBusy}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </Grid>
+        </Grid>
+    </ScrollView>
+</ContentPage>

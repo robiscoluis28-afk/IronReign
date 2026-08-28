@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="IronReign.Views.WorkoutRunnerPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewmodels="clr-namespace:IronReign.ViewModels"
+    x:DataType="viewmodels:WorkoutRunnerViewModel"
+    Title="Entrenamiento"
+    BackgroundColor="{StaticResource Background}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="14">
+
+            <VerticalStackLayout Spacing="2">
+                <Label
+                    Text="Entrenamiento"
+                    Style="{StaticResource TitleLabelStyle}" />
+                <Label
+                    Text="Elige una rutina y registra cada serie a medida que la completas."
+                    Style="{StaticResource BodyLabelStyle}" />
+            </VerticalStackLayout>
+
+            <Label
+                Text="{Binding ErrorMessage}"
+                TextColor="{StaticResource Danger}"
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+            <VerticalStackLayout
+                Spacing="12"
+                BindableLayout.ItemsSource="{Binding Routines}">
+
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:WorkoutRoutineListItemViewModel">
+                        <Border Style="{StaticResource BlockCardStyle}">
+                            <VerticalStackLayout Spacing="12">
+
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label
+                                        Text="{Binding Name}"
+                                        FontSize="18"
+                                        FontAttributes="Bold"
+                                        TextColor="{StaticResource TextPrimary}"
+                                        VerticalOptions="Center" />
+
+                                    <Button
+                                        Grid.Column="1"
+                                        Text="Ver"
+                                        FontSize="13"
+                                        WidthRequest="70"
+                                        HeightRequest="40"
+                                        Padding="0"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        Command="{Binding ToggleExpandCommand}" />
+                                </Grid>
+
+                                <VerticalStackLayout
+                                    Spacing="14"
+                                    IsVisible="{Binding IsExpanded}">
+
+                                    <Border
+                                        IsVisible="{Binding IsWorkoutActive}"
+                                        BackgroundColor="#20180E"
+                                        Stroke="{StaticResource Accent}"
+                                        StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 18"
+                                        HorizontalOptions="Center"
+                                        Padding="20,8">
+                                        <Label
+                                            Text="{Binding ElapsedTimeDisplay}"
+                                            FontSize="26"
+                                            FontAttributes="Bold"
+                                            HorizontalOptions="Center"
+                                            TextColor="{StaticResource Accent}" />
+                                    </Border>
+
+                                    <Button
+                                        Text="Empezar entrenamiento"
+                                        Command="{Binding StartWorkoutCommand}"
+                                        IsVisible="{Binding IsWorkoutActive, Converter={StaticResource InvertedBoolConverter}}" />
+
+                                    <VerticalStackLayout
+                                        Spacing="14"
+                                        BindableLayout.ItemsSource="{Binding Exercises}">
+
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="viewmodels:WorkoutExerciseRunItemViewModel">
+                                                <Border Style="{StaticResource SubtleCardStyle}">
+                                                    <VerticalStackLayout Spacing="12">
+
+                                                        <VerticalStackLayout Spacing="6">
+                                                            <Label
+                                                                Text="{Binding ExerciseName}"
+                                                                FontSize="17"
+                                                                FontAttributes="Bold"
+                                                                TextColor="{StaticResource TextPrimary}" />
+
+                                                            <ProgressBar
+                                                                Progress="{Binding ProgressRatio}"
+                                                                ProgressColor="{StaticResource Accent}"
+                                                                HeightRequest="6" />
+
+                                                            <Label
+                                                                Text="{Binding SetsProgress}"
+                                                                TextColor="{StaticResource Accent}"
+                                                                FontAttributes="Bold"
+                                                                FontSize="13" />
+
+                                                            <Label
+                                                                Text="{Binding TargetReps}"
+                                                                Style="{StaticResource BodyLabelStyle}" />
+
+                                                            <Label
+                                                                Text="{Binding LastPerformance}"
+                                                                Style="{StaticResource BodyLabelStyle}" />
+                                                        </VerticalStackLayout>
+
+                                                        <Label
+                                                            Text="{Binding CurrentStepLabel}"
+                                                            FontSize="14"
+                                                            FontAttributes="Bold"
+                                                            TextColor="{StaticResource TextPrimary}" />
+
+                                                        <Label
+                                                            Text="{Binding CurrentStepInstruction}"
+                                                            FontSize="12"
+                                                            TextColor="{StaticResource Accent}"
+                                                            IsVisible="{Binding CurrentStepInstruction, Converter={StaticResource StringNotEmptyConverter}}" />
+
+                                                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                                                            <Border
+                                                                Grid.Column="0"
+                                                                Style="{StaticResource InputContainerStyle}">
+                                                                <Entry
+                                                                    Text="{Binding WeightText}"
+                                                                    Placeholder="Peso"
+                                                                    Keyboard="Numeric" />
+                                                            </Border>
+
+                                                            <Border
+                                                                Grid.Column="1"
+                                                                Style="{StaticResource InputContainerStyle}">
+                                                                <Entry
+                                                                    Text="{Binding RepsText}"
+                                                                    Placeholder="Reps"
+                                                                    Keyboard="Numeric" />
+                                                            </Border>
+
+                                                            <Border
+                                                                Grid.Column="2"
+                                                                Style="{StaticResource InputContainerStyle}">
+                                                                <Entry
+                                                                    Text="{Binding RirText}"
+                                                                    Placeholder="RIR"
+                                                                    Keyboard="Numeric" />
+                                                            </Border>
+                                                        </Grid>
+
+                                                        <Grid
+                                                            ColumnDefinitions="Auto,*,Auto"
+                                                            ColumnSpacing="10"
+                                                            IsVisible="{Binding IsMyoDecisionActive, Converter={StaticResource InvertedBoolConverter}}">
+                                                            <Button
+                                                                Text="-"
+                                                                WidthRequest="48"
+                                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                                Command="{Binding DecreaseSetFromExerciseCommand}" />
+
+                                                            <Button
+                                                                Grid.Column="1"
+                                                                Text="Marcar serie hecha"
+                                                                Command="{Binding CompleteSetFromExerciseCommand}" />
+
+                                                            <Button
+                                                                Grid.Column="2"
+                                                                Text="+"
+                                                                WidthRequest="48"
+                                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                                Command="{Binding CompleteSetFromExerciseCommand}" />
+                                                        </Grid>
+
+                                                        <Grid
+                                                            ColumnDefinitions="*,*"
+                                                            ColumnSpacing="10"
+                                                            IsVisible="{Binding IsMyoDecisionActive}">
+                                                            <Button
+                                                                Grid.Column="0"
+                                                                Text="Añadir mini-serie"
+                                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                                Command="{Binding AddMyoMiniSetCommand}" />
+
+                                                            <Button
+                                                                Grid.Column="1"
+                                                                Text="Terminar técnica"
+                                                                Command="{Binding FinishMyoTechniqueCommand}" />
+                                                        </Grid>
+
+                                                        <Border
+                                                            IsVisible="{Binding IsRestActive}"
+                                                            BackgroundColor="#20180E"
+                                                            Stroke="{StaticResource Accent}"
+                                                            StrokeThickness="1"
+                                                            StrokeShape="RoundRectangle 14"
+                                                            Padding="14,8">
+                                                            <Grid ColumnDefinitions="*,Auto">
+                                                                <Label
+                                                                    Text="{Binding RemainingRestSeconds, StringFormat='Descansando · {0}s'}"
+                                                                    TextColor="{StaticResource Accent}"
+                                                                    FontAttributes="Bold"
+                                                                    VerticalOptions="Center" />
+
+                                                                <Button
+                                                                    Grid.Column="1"
+                                                                    Text="Saltar"
+                                                                    FontSize="12"
+                                                                    Padding="10,4"
+                                                                    Style="{StaticResource SecondaryButtonStyle}"
+                                                                    Command="{Binding SkipRestFromExerciseCommand}" />
+                                                            </Grid>
+                                                        </Border>
+
+                                                    </VerticalStackLayout>
+                                                </Border>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+
+                                    <Button
+                                        Text="Finalizar entreno"
+                                        Command="{Binding FinishWorkoutCommand}"
+                                        IsVisible="{Binding IsWorkoutActive}" />
+
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="IronReign.Views.HistoryPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewmodels="clr-namespace:IronReign.ViewModels"
+    xmlns:views="clr-namespace:IronReign.Views"
+    x:Name="PageSelf"
+    x:DataType="viewmodels:HistoryViewModel"
+    Title="Historial"
+    BackgroundColor="{StaticResource Background}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <VerticalStackLayout Grid.Row="0" Padding="20,16,20,8" Spacing="4">
+            <Label
+                Text="Historial"
+                Style="{StaticResource TitleLabelStyle}" />
+            <Label
+                Text="Repasa tus entrenos pasados y su volumen total."
+                Style="{StaticResource BodyLabelStyle}" />
+            <Label
+                Text="{Binding ErrorMessage}"
+                TextColor="{StaticResource Danger}"
+                FontSize="13"
+                Margin="0,4,0,0"
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+        </VerticalStackLayout>
+
+        <RefreshView Grid.Row="1" Command="{Binding LoadCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView
+                ItemsSource="{Binding Sessions}"
+                Margin="0,0,0,12">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Padding="20" Spacing="8" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label
+                            Text="Todavía no hay entrenos guardados."
+                            Style="{StaticResource BodyLabelStyle}"
+                            HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:WorkoutSessionSummaryViewModel">
+                        <Border Style="{StaticResource SubtleCardStyle}" Margin="20,0">
+                            <VerticalStackLayout Spacing="8">
+
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                        <Label
+                                            Text="{Binding Name}"
+                                            FontSize="17"
+                                            FontAttributes="Bold"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                        <Label
+                                            Text="{Binding DateText}"
+                                            FontSize="13"
+                                            TextColor="{StaticResource TextSecondary}" />
+                                        <Label
+                                            Text="{Binding TotalVolumeText}"
+                                            FontSize="12"
+                                            FontAttributes="Bold"
+                                            TextColor="{StaticResource Accent}" />
+                                        <Label
+                                            Text="{Binding TotalSets, StringFormat='{0} series'}"
+                                            FontSize="12"
+                                            TextColor="{StaticResource TextSecondary}" />
+                                    </VerticalStackLayout>
+
+                                    <Button
+                                        Grid.Column="1"
+                                        Text="Ver"
+                                        FontSize="13"
+                                        Padding="12,8"
+                                        VerticalOptions="Center"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        Command="{Binding ToggleExpandedCommand}" />
+
+                                    <Button
+                                        Grid.Column="2"
+                                        Text="Borrar"
+                                        FontSize="13"
+                                        Padding="12,8"
+                                        VerticalOptions="Center"
+                                        BackgroundColor="{StaticResource Danger}"
+                                        TextColor="White"
+                                        Command="{Binding
+    Source={RelativeSource AncestorType={x:Type ContentPage}},
+    Path=BindingContext.DeleteSessionCommand,
+    x:DataType={x:Null}}"
+                                        CommandParameter="{Binding .}" />
+                                </Grid>
+
+                                <VerticalStackLayout
+                                    Spacing="10"
+                                    IsVisible="{Binding IsExpanded}"
+                                    BindableLayout.ItemsSource="{Binding Exercises}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="viewmodels:WorkoutBlockSummaryViewModel">
+                                            <Border Style="{StaticResource InputContainerStyle}">
+                                                <VerticalStackLayout Spacing="4">
+                                                    <Label
+                                                        Text="{Binding ExerciseName}"
+                                                        FontSize="14"
+                                                        FontAttributes="Bold"
+                                                        TextColor="{StaticResource TextPrimary}" />
+                                                    <Label
+                                                        Text="{Binding BlockType}"
+                                                        FontSize="12"
+                                                        TextColor="{StaticResource Accent}" />
+                                                    <Label
+                                                        Text="{Binding SetsText}"
+                                                        FontSize="13"
+                                                        TextColor="{StaticResource TextSecondary}" />
+                                                </VerticalStackLayout>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>
