@@ -135,6 +135,8 @@ jobs:
           find "$APP_DIR" -iname "*ironreign*"
           echo "--- Anything matching 'wordmark' or 'icon' loose files ---"
           find "$APP_DIR" -iname "*wordmark*" -o -iname "*icon*"
+          echo "--- Asset names inside Assets.car ---"
+          assetutil --info "$APP_DIR/Assets.car" | grep -i "name\|ironreign\|wordmark" | head -60
 
       # --- Subida a TestFlight ---------------------------------------------
       # Secreto ASC_API_KEY_ID / ASC_API_ISSUER_ID: de App Store Connect ->
