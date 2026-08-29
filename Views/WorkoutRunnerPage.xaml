@@ -59,7 +59,7 @@
 
                                     <Border
                                         IsVisible="{Binding IsWorkoutActive}"
-                                        BackgroundColor="#20180E"
+                                        BackgroundColor="#1C1707"
                                         Stroke="{StaticResource Accent}"
                                         StrokeThickness="1"
                                         StrokeShape="RoundRectangle 18"
@@ -196,7 +196,7 @@
 
                                                         <Border
                                                             IsVisible="{Binding IsRestActive}"
-                                                            BackgroundColor="#20180E"
+                                                            BackgroundColor="#1C1707"
                                                             Stroke="{StaticResource Accent}"
                                                             StrokeThickness="1"
                                                             StrokeShape="RoundRectangle 14"

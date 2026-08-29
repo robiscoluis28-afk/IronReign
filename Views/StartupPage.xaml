@@ -6,7 +6,7 @@
     xmlns:viewmodels="clr-namespace:IronReign.ViewModels"
     x:DataType="viewmodels:StartupViewModel"
     Shell.NavBarIsVisible="False"
-    BackgroundColor="#0F1115">
+    BackgroundColor="#000000">
 
     <Grid Padding="24">
         <VerticalStackLayout
@@ -23,13 +23,13 @@
             <Label
                 Text="{Binding StatusMessage}"
                 FontSize="14"
-                TextColor="#B8C1CC"
+                TextColor="#9A9A9A"
                 HorizontalTextAlignment="Center" />
 
             <ActivityIndicator
                 IsRunning="{Binding IsBusy}"
                 IsVisible="{Binding IsBusy}"
-                Color="#FCA311"
+                Color="#C9A24A"
                 WidthRequest="42"
                 HeightRequest="42" />
         </VerticalStackLayout>

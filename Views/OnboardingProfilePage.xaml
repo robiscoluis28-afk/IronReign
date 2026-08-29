@@ -13,7 +13,7 @@
         <Grid RowDefinitions="Auto,*" Padding="0">
 
             <Border
-                BackgroundColor="#151922"
+                BackgroundColor="#0A0A0A"
                 StrokeThickness="0"
                 Padding="0,36,0,28">
                 <VerticalStackLayout
@@ -23,7 +23,7 @@
                     Spacing="10">
 
                     <Border
-                        BackgroundColor="#20180E"
+                        BackgroundColor="#1C1707"
                         Stroke="{StaticResource Accent}"
                         StrokeThickness="1"
                         StrokeShape="RoundRectangle 18"

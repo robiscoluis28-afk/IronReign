@@ -34,7 +34,7 @@
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
                     <Border
                         Grid.Column="0"
-                        BackgroundColor="#20180E"
+                        BackgroundColor="#1C1707"
                         Stroke="{StaticResource Accent}"
                         StrokeThickness="1"
                         StrokeShape="RoundRectangle 16"

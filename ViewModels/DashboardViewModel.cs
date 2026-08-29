@@ -2,12 +2,20 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IronReign.Data;
 using IronReign.Services;
+using System.Collections.ObjectModel;
 
 namespace IronReign.ViewModels;
 
+public class StreakDayItem
+{
+    public bool Trained { get; init; }
+    public bool IsToday { get; init; }
+}
+
 public partial class DashboardViewModel : ObservableObject
 {
-    private const int WeeklyGoalSessions = 4;
+    private const int StreakDaysWindow = 28;
+    private const int TrendWeeks = 8;
 
     private readonly UserSessionService _userSessionService;
     private readonly AppDatabase _database;
@@ -16,25 +24,23 @@ public partial class DashboardViewModel : ObservableObject
     public partial string WelcomeText { get; set; } = "Bienvenido";
 
     [ObservableProperty]
-    public partial string ActiveUserText { get; set; } = "Sin perfil activo";
+    public partial bool HasTodayRoutine { get; set; }
 
     [ObservableProperty]
-    public partial string WeeklyTimeText { get; set; } = "0 min";
+    public partial string TodayRoutineName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string MonthlyWorkoutsText { get; set; } = "0";
+    public partial string TodayExerciseCountText { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial double WeeklyGoalProgress { get; set; }
-
-    [ObservableProperty]
-    public partial string WeeklyGoalText { get; set; } = $"0 de {WeeklyGoalSessions} entrenos esta semana";
-
-    [ObservableProperty]
-    public partial string SummaryCaptionText { get; set; } = "Sin entrenamientos todavía";
+    public partial int CurrentStreakDays { get; set; }
 
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
+
+    public ObservableCollection<StreakDayItem> StreakDays { get; } = new();
+
+    public ObservableCollection<double> WeeklyTrend { get; } = new();
 
     public DashboardViewModel(UserSessionService userSessionService, AppDatabase database)
     {
@@ -56,64 +62,50 @@ public partial class DashboardViewModel : ObservableObject
 
             if (user is null)
             {
-                ActiveUserText = "Sin perfil activo";
                 WelcomeText = "Bienvenido";
-                ResetStats();
+                HasTodayRoutine = false;
+                CurrentStreakDays = 0;
+                RefreshStreak(new HashSet<DateTime>());
+                RefreshTrend(new double[TrendWeeks]);
                 return;
             }
 
-            ActiveUserText = $"{user.FirstName} {user.LastName}".Trim();
             WelcomeText = $"Hola, {user.FirstName}";
 
-            var sessions = await _database.GetWorkoutSessionsByUserAsync(user.Id);
+            var activeRoutine = await _database.GetActiveRoutineAsync(user.Id);
 
-            if (sessions.Count == 0)
+            if (activeRoutine is null)
             {
-                ResetStats();
-                return;
+                HasTodayRoutine = false;
+                TodayRoutineName = string.Empty;
+                TodayExerciseCountText = string.Empty;
+            }
+            else
+            {
+                var exercises = await _database.GetRoutineExercisesAsync(activeRoutine.Id);
+                HasTodayRoutine = true;
+                TodayRoutineName = activeRoutine.Name;
+                TodayExerciseCountText = $"{exercises.Count} ejercicios";
             }
 
+            var sessions = await _database.GetWorkoutSessionsByUserAsync(user.Id);
+            var trainedDates = sessions.Select(s => s.SessionDateUtc.Date).ToHashSet();
+
+            RefreshStreak(trainedDates);
+
             var today = DateTime.UtcNow.Date;
-            var daysSinceMonday = ((int)today.DayOfWeek + 6) % 7;
-            var mondayThisWeek = today.AddDays(-daysSinceMonday);
-            var monthStart = new DateTime(today.Year, today.Month, 1);
-
-            var weeklySessions = sessions.Where(s => s.SessionDateUtc.Date >= mondayThisWeek).ToList();
-            var monthlySessions = sessions.Where(s => s.SessionDateUtc.Date >= monthStart).ToList();
-
-            WeeklyTimeText = $"{weeklySessions.Sum(s => s.DurationMinutes)} min";
-            MonthlyWorkoutsText = monthlySessions.Count.ToString();
-
-            WeeklyGoalProgress = Math.Clamp((double)weeklySessions.Count / WeeklyGoalSessions, 0, 1);
-            WeeklyGoalText = $"{Math.Min(weeklySessions.Count, WeeklyGoalSessions)} de {WeeklyGoalSessions} entrenos esta semana";
-
-            int totalSets = 0;
-            int sessionCountWithSets = 0;
+            var weeklyMinutes = new double[TrendWeeks];
 
             foreach (var session in sessions)
             {
-                var blocks = await _database.GetWorkoutExerciseBlocksAsync(session.Id);
-                int sessionSets = 0;
+                var daysAgo = (today - session.SessionDateUtc.Date).Days;
+                var weekIndex = TrendWeeks - 1 - (daysAgo / 7);
 
-                foreach (var block in blocks)
-                {
-                    var entries = await _database.GetWorkoutBlockEntriesAsync(block.Id);
-                    sessionSets += entries.Count;
-                }
-
-                if (sessionSets > 0)
-                {
-                    totalSets += sessionSets;
-                    sessionCountWithSets++;
-                }
+                if (weekIndex >= 0 && weekIndex < TrendWeeks)
+                    weeklyMinutes[weekIndex] += session.DurationMinutes;
             }
 
-            var averageSets = sessionCountWithSets > 0
-                ? Math.Round((double)totalSets / sessionCountWithSets, 1)
-                : 0;
-
-            var lastSession = sessions.First();
-            SummaryCaptionText = $"Último: {lastSession.SessionDateUtc:dd/MM} · Promedio {averageSets} series/sesión";
+            RefreshTrend(weeklyMinutes);
         }
         finally
         {
@@ -121,13 +113,43 @@ public partial class DashboardViewModel : ObservableObject
         }
     }
 
-    private void ResetStats()
+    private void RefreshStreak(HashSet<DateTime> trainedDates)
     {
-        WeeklyTimeText = "0 min";
-        MonthlyWorkoutsText = "0";
-        WeeklyGoalProgress = 0;
-        WeeklyGoalText = $"0 de {WeeklyGoalSessions} entrenos esta semana";
-        SummaryCaptionText = "Sin entrenamientos todavía";
+        var today = DateTime.UtcNow.Date;
+
+        StreakDays.Clear();
+
+        for (var i = StreakDaysWindow - 1; i >= 0; i--)
+        {
+            var date = today.AddDays(-i);
+            StreakDays.Add(new StreakDayItem
+            {
+                Trained = trainedDates.Contains(date),
+                IsToday = date == today
+            });
+        }
+
+        var streak = 0;
+        var cursor = today;
+
+        if (!trainedDates.Contains(cursor))
+            cursor = cursor.AddDays(-1);
+
+        while (trainedDates.Contains(cursor))
+        {
+            streak++;
+            cursor = cursor.AddDays(-1);
+        }
+
+        CurrentStreakDays = streak;
+    }
+
+    private void RefreshTrend(IReadOnlyList<double> weeklyMinutes)
+    {
+        WeeklyTrend.Clear();
+
+        foreach (var minutes in weeklyMinutes)
+            WeeklyTrend.Add(minutes);
     }
 
     [RelayCommand]
