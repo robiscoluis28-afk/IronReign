@@ -40,6 +40,11 @@
 
 	<ItemGroup>
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.png" ForegroundScale="0.65" />
+
+		<!-- A diferencia de MauiXaml, no existe ningún glob automático para MauiImage en
+		     ningún paquete de MAUI: hay que declararlo a mano o las imágenes de
+		     Resources\Images nunca se procesan en ninguna plataforma. -->
+		<MauiImage Include="Resources\Images\**\*.svg;Resources\Images\**\*.png;Resources\Images\**\*.jpg;Resources\Images\**\*.jpeg" />
 	</ItemGroup>
 
 	<!-- La app corre sin empaquetar en Windows (WindowsPackageType=None), por lo que el
