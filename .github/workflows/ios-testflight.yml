@@ -107,6 +107,9 @@ jobs:
       # aparece en Keychain Access, ej. "Apple Distribution: Tu Nombre (EQUIPOID)".
       # Secreto IOS_CODESIGN_PROVISION: el nombre que le pusiste al perfil de
       # aprovisionamiento en Apple Developer (no el UUID del archivo).
+      # Apple exige que el número de build (CFBundleVersion) sea siempre mayor
+      # que el de la última subida. Usamos el número de ejecución del workflow,
+      # que crece solo en cada push/relanzamiento.
       - name: Publish iOS app
         env:
           CODESIGN_KEY: ${{ secrets.IOS_CODESIGN_KEY }}
@@ -118,6 +121,7 @@ jobs:
           -p:RuntimeIdentifier=ios-arm64
           -p:ArchiveOnBuild=true
           -p:BuildIpa=true
+          -p:ApplicationVersion=${{ github.run_number }}
           -p:CodesignKey="$CODESIGN_KEY"
           -p:CodesignProvision="$CODESIGN_PROVISION"
 
