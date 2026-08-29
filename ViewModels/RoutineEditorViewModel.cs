@@ -8,6 +8,15 @@ using System.Globalization;
 
 namespace IronReign.ViewModels;
 
+public partial class DayToggleItem : ObservableObject
+{
+    public required DayOfWeek Day { get; init; }
+    public required string Label { get; init; }
+
+    [ObservableProperty]
+    public partial bool IsSelected { get; set; }
+}
+
 public partial class RoutineEditorViewModel : ObservableObject, IQueryAttributable
 {
     private readonly AppDatabase _database;
@@ -52,9 +61,6 @@ public partial class RoutineEditorViewModel : ObservableObject, IQueryAttributab
     public partial bool IsBusy { get; set; }
 
     [ObservableProperty]
-    public partial bool IsActiveRoutine { get; set; }
-
-    [ObservableProperty]
     public partial bool NewExerciseIsSuperset { get; set; }
 
     [ObservableProperty]
@@ -73,6 +79,17 @@ public partial class RoutineEditorViewModel : ObservableObject, IQueryAttributab
         "Dropset doble",
         "Cluster",
         "Myo-reps"
+    };
+
+    public ObservableCollection<DayToggleItem> ScheduledDayOptions { get; } = new()
+    {
+        new DayToggleItem { Day = DayOfWeek.Monday, Label = "L" },
+        new DayToggleItem { Day = DayOfWeek.Tuesday, Label = "M" },
+        new DayToggleItem { Day = DayOfWeek.Wednesday, Label = "X" },
+        new DayToggleItem { Day = DayOfWeek.Thursday, Label = "J" },
+        new DayToggleItem { Day = DayOfWeek.Friday, Label = "V" },
+        new DayToggleItem { Day = DayOfWeek.Saturday, Label = "S" },
+        new DayToggleItem { Day = DayOfWeek.Sunday, Label = "D" }
     };
 
     public ObservableCollection<SetTechniqueItemViewModel> NewExerciseSetTechniques { get; } = new();
@@ -137,7 +154,7 @@ public partial class RoutineEditorViewModel : ObservableObject, IQueryAttributab
             {
                 RoutineName = string.Empty;
                 RoutineNotes = string.Empty;
-                IsActiveRoutine = false;
+                SetSelectedScheduledDays(Enumerable.Empty<int>());
                 ResetExerciseInputs();
                 RefreshAvailableSupersetPartners();
                 return;
@@ -153,7 +170,12 @@ public partial class RoutineEditorViewModel : ObservableObject, IQueryAttributab
 
             RoutineName = routine.Name;
             RoutineNotes = routine.Notes ?? string.Empty;
-            IsActiveRoutine = routine.IsActive;
+
+            var scheduledDays = (routine.ScheduledDays ?? string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse);
+
+            SetSelectedScheduledDays(scheduledDays);
 
             var exercises = await _database.GetRoutineExercisesAsync(routine.Id);
             var itemsById = new Dictionary<int, RoutineExerciseEditorItemViewModel>();
@@ -508,7 +530,6 @@ public partial class RoutineEditorViewModel : ObservableObject, IQueryAttributab
                     UserProfileId = activeUser.Id,
                     Name = RoutineName.Trim(),
                     Notes = RoutineNotes.Trim(),
-                    IsActive = false,
                     CreatedAtUtc = DateTime.UtcNow
                 };
             }
@@ -527,6 +548,9 @@ public partial class RoutineEditorViewModel : ObservableObject, IQueryAttributab
 
             await _database.SaveRoutineTemplateAsync(routine);
             RoutineId = routine.Id;
+
+            var selectedDays = ScheduledDayOptions.Where(x => x.IsSelected).Select(x => x.Day);
+            await _database.SetRoutineScheduledDaysAsync(activeUser.Id, routine.Id, selectedDays);
 
             var currentIds = Exercises.Where(x => x.Id != 0).Select(x => x.Id).ToHashSet();
             var removedIds = _loadedExerciseIds.Except(currentIds).ToList();
@@ -631,25 +655,20 @@ public partial class RoutineEditorViewModel : ObservableObject, IQueryAttributab
     }
 
     [RelayCommand]
-    private async Task ActivateRoutineAsync()
+    private void ToggleScheduledDay(DayToggleItem? item)
     {
-        if (RoutineId == 0)
-        {
-            ErrorMessage = "Guarda la rutina antes de activarla.";
+        if (item is null)
             return;
-        }
 
-        var activeUser = await _userSessionService.LoadActiveUserAsync();
+        item.IsSelected = !item.IsSelected;
+    }
 
-        if (activeUser is null)
-        {
-            ErrorMessage = "No hay un usuario activo.";
-            return;
-        }
+    private void SetSelectedScheduledDays(IEnumerable<int> dayValues)
+    {
+        var selected = dayValues.ToHashSet();
 
-        await _database.SetActiveRoutineAsync(activeUser.Id, RoutineId);
-        IsActiveRoutine = true;
-        ErrorMessage = "Rutina activada.";
+        foreach (var option in ScheduledDayOptions)
+            option.IsSelected = selected.Contains((int)option.Day);
     }
 
     [RelayCommand]

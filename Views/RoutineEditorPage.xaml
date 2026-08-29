@@ -22,23 +22,35 @@
                     Style="{StaticResource BodyLabelStyle}" />
             </VerticalStackLayout>
 
-            <HorizontalStackLayout Spacing="10">
-                <Button
-                    Text="Activar"
-                    Command="{Binding ActivateRoutineCommand}"
-                    Style="{StaticResource SecondaryButtonStyle}" />
+            <Button
+                Text="Eliminar rutina"
+                Command="{Binding DeleteRoutineCommand}"
+                Style="{StaticResource SecondaryButtonStyle}"
+                HorizontalOptions="Start" />
 
-                <Button
-                    Text="Eliminar"
-                    Command="{Binding DeleteRoutineCommand}"
-                    Style="{StaticResource SecondaryButtonStyle}" />
-            </HorizontalStackLayout>
-
-            <Label
-                Text="Rutina activa"
-                TextColor="{StaticResource Accent}"
-                FontSize="13"
-                IsVisible="{Binding IsActiveRoutine}" />
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Días de la semana" Style="{StaticResource FieldTitleLabelStyle}" />
+                <HorizontalStackLayout Spacing="6" BindableLayout.ItemsSource="{Binding ScheduledDayOptions}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:DayToggleItem">
+                            <Button
+                                Text="{Binding Label}"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                Padding="0"
+                                FontSize="13"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                BackgroundColor="{Binding IsSelected, Converter={StaticResource BoolToAccentConverter}}"
+                                TextColor="{Binding IsSelected, Converter={StaticResource BoolToTextColorConverter}}"
+                                Command="{Binding
+    Source={RelativeSource AncestorType={x:Type ContentPage}},
+    Path=BindingContext.ToggleScheduledDayCommand,
+    x:DataType={x:Null}}"
+                                CommandParameter="{Binding .}" />
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
 
             <Border Style="{StaticResource InputContainerStyle}">
                 <Entry

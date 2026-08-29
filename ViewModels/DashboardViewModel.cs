@@ -72,9 +72,9 @@ public partial class DashboardViewModel : ObservableObject
 
             WelcomeText = $"Hola, {user.FirstName}";
 
-            var activeRoutine = await _database.GetActiveRoutineAsync(user.Id);
+            var todayRoutine = await _database.GetRoutineForDayAsync(user.Id, DateTime.Now.DayOfWeek);
 
-            if (activeRoutine is null)
+            if (todayRoutine is null)
             {
                 HasTodayRoutine = false;
                 TodayRoutineName = string.Empty;
@@ -82,9 +82,9 @@ public partial class DashboardViewModel : ObservableObject
             }
             else
             {
-                var exercises = await _database.GetRoutineExercisesAsync(activeRoutine.Id);
+                var exercises = await _database.GetRoutineExercisesAsync(todayRoutine.Id);
                 HasTodayRoutine = true;
-                TodayRoutineName = activeRoutine.Name;
+                TodayRoutineName = todayRoutine.Name;
                 TodayExerciseCountText = $"{exercises.Count} ejercicios";
             }
 

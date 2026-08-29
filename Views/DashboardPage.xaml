@@ -67,11 +67,11 @@
 
                 <VerticalStackLayout IsVisible="{Binding HasTodayRoutine, Converter={StaticResource InvertedBoolConverter}}" Spacing="14">
                     <Label
-                        Text="No tienes ninguna rutina activa todavía."
+                        Text="No tienes ninguna rutina asignada a hoy."
                         FontSize="15"
                         TextColor="{StaticResource TextSecondary}" />
                     <Button
-                        Text="ELEGIR RUTINA"
+                        Text="ASIGNAR RUTINA"
                         Command="{Binding GoToRoutinesCommand}"
                         HeightRequest="56" />
                 </VerticalStackLayout>

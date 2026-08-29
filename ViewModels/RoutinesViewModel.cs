@@ -122,22 +122,6 @@ public partial class RoutinesViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task ActivateRoutineAsync(RoutineTemplate routine)
-    {
-        if (routine is null)
-            return;
-
-        var activeUser = await _userSessionService.LoadActiveUserAsync();
-
-        if (activeUser is null)
-            return;
-
-        await _database.SetActiveRoutineAsync(activeUser.Id, routine.Id);
-        ErrorMessage = $"'{routine.Name}' activada.";
-        await LoadAsync();
-    }
-
-    [RelayCommand]
     public async Task MoveUpAsync(RoutineTemplate routine)
     {
         if (routine is null)

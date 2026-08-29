@@ -372,7 +372,7 @@ public class AppDatabase
         return await _database!.DeleteAsync(routine);
     }
 
-    public async Task SetActiveRoutineAsync(int userProfileId, int routineTemplateId)
+    public async Task SetRoutineScheduledDaysAsync(int userProfileId, int routineTemplateId, IEnumerable<DayOfWeek> days)
     {
         await Init();
 
@@ -380,19 +380,43 @@ public class AppDatabase
             .Where(x => x.UserProfileId == userProfileId)
             .ToListAsync();
 
+        var newDays = days.Select(d => (int)d).ToHashSet();
+
         foreach (var routine in routines)
         {
-            routine.IsActive = routine.Id == routineTemplateId;
-            await _database.UpdateAsync(routine);
+            var currentDays = ParseScheduledDays(routine.ScheduledDays);
+
+            if (routine.Id == routineTemplateId)
+            {
+                routine.ScheduledDays = string.Join(",", newDays.OrderBy(d => d));
+                await _database.UpdateAsync(routine);
+            }
+            else if (currentDays.Overlaps(newDays))
+            {
+                currentDays.ExceptWith(newDays);
+                routine.ScheduledDays = string.Join(",", currentDays.OrderBy(d => d));
+                await _database.UpdateAsync(routine);
+            }
         }
     }
 
-    public async Task<RoutineTemplate?> GetActiveRoutineAsync(int userProfileId)
+    public async Task<RoutineTemplate?> GetRoutineForDayAsync(int userProfileId, DayOfWeek day)
     {
         await Init();
 
-        return await _database!.Table<RoutineTemplate>()
-            .FirstOrDefaultAsync(x => x.UserProfileId == userProfileId && x.IsActive);
+        var routines = await _database!.Table<RoutineTemplate>()
+            .Where(x => x.UserProfileId == userProfileId)
+            .ToListAsync();
+
+        return routines.FirstOrDefault(x => ParseScheduledDays(x.ScheduledDays).Contains((int)day));
+    }
+
+    private static HashSet<int> ParseScheduledDays(string? scheduledDays)
+    {
+        return (scheduledDays ?? string.Empty)
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(int.Parse)
+            .ToHashSet();
     }
 
     public async Task<List<RoutineTemplate>> GetAllRoutineTemplatesAsync()

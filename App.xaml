@@ -18,6 +18,7 @@
             <helpers:BoolToAccentConverter x:Key="BoolToAccentConverter" />
             <helpers:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
             <helpers:IntIsZeroConverter x:Key="IntIsZeroConverter" />
+            <helpers:ScheduledDaysToTextConverter x:Key="ScheduledDaysToTextConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

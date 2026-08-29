@@ -100,7 +100,7 @@ public class CloudBackupService
             {
                 Name = routine.Name,
                 Notes = routine.Notes,
-                IsActive = routine.IsActive,
+                ScheduledDays = routine.ScheduledDays,
                 DisplayOrder = routine.DisplayOrder,
                 CreatedAtUtc = routine.CreatedAtUtc
             };
@@ -230,7 +230,7 @@ public class CloudBackupService
                 UserProfileId = targetProfile.Id,
                 Name = backupRoutine.Name,
                 Notes = backupRoutine.Notes,
-                IsActive = backupRoutine.IsActive,
+                ScheduledDays = backupRoutine.ScheduledDays,
                 CreatedAtUtc = backupRoutine.CreatedAtUtc,
                 DisplayOrder = backupRoutine.DisplayOrder
             };
