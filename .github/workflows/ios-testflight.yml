@@ -125,6 +125,17 @@ jobs:
           -p:CodesignKey="$CODESIGN_KEY"
           -p:CodesignProvision="$CODESIGN_PROVISION"
 
+      - name: Inspect bundled image assets
+        run: |
+          APP_DIR=$(find bin -type d -name "*.app" | head -n 1)
+          echo "App bundle: $APP_DIR"
+          echo "--- Top-level contents ---"
+          ls -la "$APP_DIR"
+          echo "--- Anything matching 'ironreign' ---"
+          find "$APP_DIR" -iname "*ironreign*"
+          echo "--- Anything matching 'wordmark' or 'icon' loose files ---"
+          find "$APP_DIR" -iname "*wordmark*" -o -iname "*icon*"
+
       # --- Subida a TestFlight ---------------------------------------------
       # Secreto ASC_API_KEY_ID / ASC_API_ISSUER_ID: de App Store Connect ->
       # Usuarios y Accesos -> Claves -> Claves de App Store Connect.
