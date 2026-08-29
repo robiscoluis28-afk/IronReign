@@ -11,8 +11,8 @@
     <ScrollView>
         <VerticalStackLayout
             MaximumWidthRequest="480"
-            HorizontalOptions="Center"
-            Padding="24"
+            HorizontalOptions="Fill"
+            Padding="16"
             Spacing="24"
             VerticalOptions="Center">
 

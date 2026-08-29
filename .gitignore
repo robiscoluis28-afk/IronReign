@@ -15,5 +15,10 @@ hs_err_pid*.log
 *.p12
 *.mobileprovision
 *.p8
+*.key
+*.csr
+*.cer
+*.pem
+*.b64
 
 .DS_Store

@@ -229,12 +229,11 @@ public partial class WorkoutRunnerViewModel : ObservableObject
                     _ = _cloudBackupService.BackupAsync(activeUser);
 
                 var totalCompletedSets = exercisesWithWork.Sum(e => e.CompletedEntries.Count);
-                var totalVolume = exercisesWithWork.Sum(e => e.CompletedEntries.Sum(entry => entry.Weight * entry.Reps));
                 var durationMinutes = Math.Max(1, elapsedSeconds / 60);
 
                 await Shell.Current.DisplayAlert(
                     "Entreno guardado",
-                    $"{routine.Name}\n\nDuración: {durationMinutes} min\nSeries completadas: {totalCompletedSets}\nVolumen total: {totalVolume:0.##} kg",
+                    $"{routine.Name}\n\nDuración: {durationMinutes} min\nSeries completadas: {totalCompletedSets}",
                     "OK");
             }
             else if (activeUser is not null)

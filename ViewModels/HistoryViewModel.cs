@@ -62,7 +62,6 @@ public partial class HistoryViewModel : ObservableObject
                 var blocks = await _database.GetWorkoutExerciseBlocksAsync(session.Id);
 
                 var totalSets = 0;
-                var totalVolume = 0.0;
 
                 foreach (var block in blocks.OrderBy(x => x.DisplayOrder))
                 {
@@ -73,7 +72,6 @@ public partial class HistoryViewModel : ObservableObject
                         .Select(FormatEntry));
 
                     totalSets += entries.Count;
-                    totalVolume += entries.Sum(e => e.Weight * e.Reps);
 
                     summary.Exercises.Add(new WorkoutBlockSummaryViewModel
                     {
@@ -85,7 +83,6 @@ public partial class HistoryViewModel : ObservableObject
                 }
 
                 summary.TotalSets = totalSets;
-                summary.TotalVolumeText = $"{totalVolume:0.##} kg totales";
 
                 Sessions.Add(summary);
             }
@@ -175,9 +172,6 @@ public partial class WorkoutSessionSummaryViewModel : ObservableObject
 
     [ObservableProperty]
     public partial int TotalSets { get; set; }
-
-    [ObservableProperty]
-    public partial string TotalVolumeText { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial bool IsExpanded { get; set; }

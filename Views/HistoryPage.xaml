@@ -17,7 +17,7 @@
                 Text="Historial"
                 Style="{StaticResource TitleLabelStyle}" />
             <Label
-                Text="Repasa tus entrenos pasados y su volumen total."
+                Text="Repasa tus entrenos pasados."
                 Style="{StaticResource BodyLabelStyle}" />
             <Label
                 Text="{Binding ErrorMessage}"
@@ -61,14 +61,10 @@
                                             FontSize="13"
                                             TextColor="{StaticResource TextSecondary}" />
                                         <Label
-                                            Text="{Binding TotalVolumeText}"
+                                            Text="{Binding TotalSets, StringFormat='{0} series'}"
                                             FontSize="12"
                                             FontAttributes="Bold"
                                             TextColor="{StaticResource Accent}" />
-                                        <Label
-                                            Text="{Binding TotalSets, StringFormat='{0} series'}"
-                                            FontSize="12"
-                                            TextColor="{StaticResource TextSecondary}" />
                                     </VerticalStackLayout>
 
                                     <Button
