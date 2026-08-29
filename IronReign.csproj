@@ -45,10 +45,18 @@
 	<!-- La app corre sin empaquetar en Windows (WindowsPackageType=None), por lo que el
 	     pipeline de recursos de MAUI no copia Resources\Images al bin. Los copiamos sueltos
 	     junto al .exe para que Image.Source="archivo.png" pueda resolverlos ahí en el target
-	     de escritorio de Windows usado para desarrollo local. -->
-	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-		<None Include="Resources\Images\*.png" CopyToOutputDirectory="PreserveNewest" Link="%(Filename)%(Extension)" Visible="false" />
-	</ItemGroup>
+	     de escritorio de Windows usado para desarrollo local.
+	     Esto se hace como Target (no como ItemGroup de nivel de proyecto) a propósito: un
+	     <None Include> con el mismo patrón que Resources\Images\*.png, aunque esté condicionado
+	     solo a Windows, se resta del glob implícito de MauiImage para TODAS las plataformas
+	     durante la evaluación del proyecto (la condición no se respeta en esa fase), lo que
+	     hacía que iOS dejara de empaquetar esas mismas imágenes por completo. -->
+	<Target Name="CopyImagesForWindowsDesktop" AfterTargets="Build" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+		<ItemGroup>
+			<_WindowsImageAssets Include="Resources\Images\*.png" />
+		</ItemGroup>
+		<Copy SourceFiles="@(_WindowsImageAssets)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+	</Target>
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="12.0.0" />
