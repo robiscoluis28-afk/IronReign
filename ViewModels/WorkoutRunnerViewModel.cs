@@ -42,6 +42,12 @@ public partial class WorkoutRunnerViewModel : ObservableObject
         if (IsBusy)
             return;
 
+        if (_sessionState.HasActiveWorkout && Routines.Count > 0)
+        {
+            RestoreActiveWorkout();
+            return;
+        }
+
         try
         {
             IsBusy = true;
