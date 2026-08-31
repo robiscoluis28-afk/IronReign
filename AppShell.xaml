@@ -4,7 +4,15 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:IronReign.Views"
-    Shell.FlyoutBehavior="Disabled">
+    Shell.FlyoutBehavior="Disabled"
+    Shell.BackgroundColor="{StaticResource Background}"
+    Shell.ForegroundColor="{StaticResource TextPrimary}"
+    Shell.TitleColor="{StaticResource TextPrimary}"
+    Shell.DisabledColor="{StaticResource TextMuted}"
+    Shell.UnselectedColor="{StaticResource TextMuted}"
+    Shell.TabBarBackgroundColor="{StaticResource Surface}"
+    Shell.TabBarTitleColor="{StaticResource Accent}"
+    Shell.TabBarUnselectedColor="{StaticResource TextMuted}">
 
     <ShellContent
         Route="login"
@@ -17,38 +25,43 @@
         Shell.NavBarIsVisible="False" />
 
     <TabBar>
-        <Tab Title="Inicio">
+        <Tab Title="Inicio" Icon="tab_home.svg">
             <ShellContent
                 Title="Inicio"
                 Route="dashboard"
+                Shell.NavBarIsVisible="False"
                 ContentTemplate="{DataTemplate views:DashboardPage}" />
         </Tab>
 
-        <Tab Title="Entrenamiento">
+        <Tab Title="Entrenamiento" Icon="tab_workout.svg">
             <ShellContent
                 Title="Entrenamiento"
                 Route="workoutrunner"
+                Shell.NavBarIsVisible="False"
                 ContentTemplate="{DataTemplate views:WorkoutRunnerPage}" />
         </Tab>
 
-        <Tab Title="Rutinas">
+        <Tab Title="Rutinas" Icon="tab_routines.svg">
             <ShellContent
                 Title="Rutinas"
                 Route="routines"
+                Shell.NavBarIsVisible="False"
                 ContentTemplate="{DataTemplate views:RoutinesPage}" />
         </Tab>
 
-        <Tab Title="Historial">
+        <Tab Title="Historial" Icon="tab_history.svg">
             <ShellContent
                 Title="Historial"
                 Route="history"
+                Shell.NavBarIsVisible="False"
                 ContentTemplate="{DataTemplate views:HistoryPage}" />
         </Tab>
 
-        <Tab Title="Ajustes">
+        <Tab Title="Ajustes" Icon="tab_settings.svg">
             <ShellContent
                 Title="Ajustes"
                 Route="settings"
+                Shell.NavBarIsVisible="False"
                 ContentTemplate="{DataTemplate views:SettingsPage}" />
         </Tab>
     </TabBar>

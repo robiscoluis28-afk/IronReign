@@ -37,8 +37,7 @@
                         Text="{Binding NewRoutineName}" />
                     <Button
                         Grid.Column="1"
-                        Text="+"
-                        FontSize="20"
+                        ImageSource="icon_plus.svg"
                         WidthRequest="48"
                         Padding="0"
                         Command="{Binding AddRoutineCommand}" />
@@ -101,8 +100,7 @@
 
                                     <HorizontalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
                                         <Button
-                                            Text="&#8593;"
-                                            FontSize="14"
+                                            ImageSource="chevron_up.svg"
                                             WidthRequest="36"
                                             HeightRequest="36"
                                             Padding="0"
@@ -113,8 +111,7 @@
     x:DataType={x:Null}}"
                                             CommandParameter="{Binding .}" />
                                         <Button
-                                            Text="&#8595;"
-                                            FontSize="14"
+                                            ImageSource="chevron_down.svg"
                                             WidthRequest="36"
                                             HeightRequest="36"
                                             Padding="0"

@@ -41,6 +41,11 @@
 	<ItemGroup>
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.png" ForegroundScale="0.65" />
 
+		<!-- Mismo problema que MauiImage: no hay glob automático para MauiSplashScreen,
+		     así que el splash.svg de plantilla (logo ".NET" por defecto) nunca se procesó
+		     en ninguna plataforma. Reutilizamos el icono de la app sobre fondo negro. -->
+		<MauiSplashScreen Include="Resources\AppIcon\appiconfg.png" Color="#000000" BaseSize="256,256" />
+
 		<!-- A diferencia de MauiXaml, no existe ningún glob automático para MauiImage en
 		     ningún paquete de MAUI: hay que declararlo a mano o las imágenes de
 		     Resources\Images nunca se procesan en ninguna plataforma. -->
